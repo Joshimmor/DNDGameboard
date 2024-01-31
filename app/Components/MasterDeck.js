@@ -62,7 +62,7 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
         // }
     },[keyToggle,handleVisiblity,blocks])
   return (
-    <div className={`absolute top-0 left-0  rounded-md  w-[5vw] h-[100vh] flex flex-col justify-between`}
+    <div className={`absolute top-0 left-0  rounded-md  w-[5vw] h-[100vh] flex flex-col justify-between opacity-0 hover:opacity-100`}
 
         style={{
             transition:"all 100ms ease-in"
