@@ -11,12 +11,13 @@ export default function Map() {
 let [blocks,setBlocks]=useState([])
 let [keyToggle,setKeyToggle] = useState()
 const handlePress = (e) =>{
-    if(!Number(e.key) && targ > blocks.length) return
-    let targ = Number(e.key)
-    let targetBlock = blocks[targ-1]
+    if(Number(e.keyCode-65) > 0 && Number(e.keyCode-65) > blocks.length-1) return
+    let targ = Number(e.keyCode - 65)
+    let targetBlock = blocks[targ]
+    console.log(targ)
     targetBlock.visable = !targetBlock.visable
     let newBlockSet = [...blocks]
-    newBlockSet[targ-1] = targetBlock
+    newBlockSet[targ] = targetBlock
     setBlocks(newBlockSet)
 }
   return (
@@ -38,7 +39,7 @@ const handlePress = (e) =>{
             {
                 blocks.length > 0 ? blocks.map((n,i)=>{
                     return(
-                        <Block key={i} visable={n.visable} name={n.name} posx={n.x} posy={n.y} />
+                        <Block key={i} visable={n.visable} name={n.name} posx={n.x} posy={n.y} index={i+1}/>
                     )
                 }):null
             }
