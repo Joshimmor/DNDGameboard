@@ -6,7 +6,7 @@ import React, { useState} from 'react'
 import "../map/[id]/Map.css"
 
 
-export default function page() {
+export default function Map() {
 
 let [blocks,setBlocks]=useState([])
 let [keyToggle,setKeyToggle] = useState()
