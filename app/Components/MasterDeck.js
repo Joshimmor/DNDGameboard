@@ -1,16 +1,11 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
-const GOOGLE_PLAYLIST = "https://www.googleapis.com/youtube/v3/playListItems"
+
 export default function MasterDeck({blocks,setBlocks,keyToggle}) {
     let [youtubeLinks ,setYoutube] = useState([])
     let [index,setIndex] = useState(0)
-    useEffect(()=>{
-        SetPlaylist()
-        if(keyToggle  && keyToggle <= blocks.length){
-            handleVisiblity(blocks[keyToggle-1].visable,keyToggle-1)
-        }
-    },[keyToggle])
+
     let SetPlaylist = () => {
         fetch(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&playlistId=PLYnIbp1vpAu7nPlqOPjnHTP_hSqZ5pQLO&maxResults=50&key=${process.env.NEXT_PUBLIC_GOOGLE}`,
         {
@@ -51,6 +46,12 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
         let targ = e.key
         console.log(e.key)
     }
+    useEffect(()=>{
+        SetPlaylist()
+        if(keyToggle  && keyToggle <= blocks.length){
+            handleVisiblity(blocks[keyToggle-1].visable,keyToggle-1)
+        }
+    },[keyToggle,SetPlaylist,handleVisiblity,blocks])
   return (
     <div className={`absolute top-0 left-0  rounded-md  w-[5vw] h-[100vh] flex flex-col justify-between`}
 
