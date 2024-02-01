@@ -81,11 +81,7 @@ export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId,f
         .then(n => console.log("Saved Blocks"))
         .catch(err => console.log(err))
     }
-    useEffect(()=>{
-        if(playlist){
-            SetPlaylist(playlist)
-        }
-    },[SetPlaylist])
+
   return (
     <div className={`absolute top-0 left-0  rounded-md  w-[5vw] h-[100vh] flex flex-col justify-between opacity-0 hover:opacity-100`}
 
@@ -136,7 +132,7 @@ export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId,f
             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M19 9L12 15L5 9" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
             </button>
         </div>
-            {addPlaylist?<PlaylistModal SetPlaylist={SetPlaylist} setAddPlayList={setAddPlayList}/>:null}
+            {addPlaylist?<PlaylistModal playlist={playlist }SetPlaylist={SetPlaylist} setAddPlayList={setAddPlayList}/>:null}
     </div>
   )
 }

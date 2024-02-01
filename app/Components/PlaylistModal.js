@@ -1,8 +1,8 @@
 "use client"
 import React,{useState} from 'react'
 
-export default function PlaylistModal({SetPlaylist,setAddPlayList}) {
-    let [playlistID,SetID] = useState(null)
+export default function PlaylistModal({SetPlaylist,setAddPlayList,playlist}) {
+    let [playlistID,SetID] = useState(playlist)
     let onChange = (e) => {
         SetID(e.target.value)
     }
