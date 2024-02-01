@@ -2,16 +2,20 @@
 import React,{useState} from 'react'
 
 export default function PlaylistModal({SetPlaylist,setAddPlayList}) {
-    let [playlistID,SetID] = useState("PLYnIbp1vpAu7nPlqOPjnHTP_hSqZ5pQLO")
+    let [playlistID,SetID] = useState(null)
     let onChange = (e) => {
         SetID(e.target.value)
     }
     let sumbitChange = () =>{
+        if(!playlistID) return
         SetPlaylist(playlistID)
         setAddPlayList(false)
     }
+    let exit = () => {
+        setAddPlayList(false)
+    }
   return (
-    <div className='fixed top-0 left-0 bg-slate-950 bg-opacity-70 w-screen h-screen flex justify-center items-center'>
+    <div className='fixed top-0 left-0 bg-slate-950 bg-opacity-70 w-screen h-screen flex justify-center items-center' onClick={exit}>
         <div className=' bg-slate-200 w-1/4 p-5 rounded-sm flex flex-col justify-center items-center'>
             <input  onChange={onChange} className='mt-5 block w-3/4 p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-sm bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder='Enter playlist ID'/>

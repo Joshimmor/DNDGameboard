@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
 import "./MasterDeck.css"
 import PlaylistModal from './PlaylistModal'
-export default function MasterDeck({blocks,setBlocks,keyToggle}) {
+export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId}) {
     let [youtubeLinks ,setYoutube] = useState([])
     let [index,setIndex] = useState(0)
     let[addPlaylist,setAddPlayList] = useState(false)
@@ -15,7 +15,7 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
         })
         .then( n => n.json())
         .then(n => setYoutube(n.items))
-        .catch(err => OnYoutubeFailure())
+        .catch(err => setYoutube([]))
     }
     let OnYoutubeFailure = () =>{
         fetch(`https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&playlistId=PLYnIbp1vpAu7nPlqOPjnHTP_hSqZ5pQLO&maxResults=50&key=${process.env.NEXT_PUBLIC_GOOGLE}`,
@@ -33,20 +33,22 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
         let y = e.pageY 
         console.log(x,y)
         let start = {
-            name:"Click to name",
+            height:20,
+            width:20,
             x:x,
             y:y,
-            visable:true
+            visible:true
         }
         setBlocks([...blocks,start])
+        saveBlock(start)
         e.preventDefault()
     }
-    let handleVisiblity = (visable,index) =>{
+    let handleVisiblity = (visible,index) =>{
         let updatedblocks = []
         for(let i = 0; i < blocks.length; i++){
             let block = {...blocks[i]}
             if(i == index){
-                block.visable = !visable
+                block.visible = !visible
             }
             updatedblocks.push(block)
         } 
@@ -56,11 +58,34 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
         let targ = e.key
         console.log(e.key)
     }
+    const saveBlock = (newBlock) =>{
+        fetch("/api/blocks",{
+            method:"POST",
+            body:JSON.stringify({
+                gameid: gameId,
+                x: newBlock.x,
+                y:newBlock.y,
+                width:newBlock.width,
+                height: newBlock.height,
+                visible:true
+            })
+        })
+        .then(n => console.log("Saved Block"))
+        .catch(err => console.log(err))
+    }
+    const saveBlocks = () =>{
+        fetch("/api/blocks",{
+            method:"PUT",
+            body:JSON.stringify(blocks)
+        })
+        .then(n => console.log("Saved Blocks"))
+        .catch(err => console.log(err))
+    }
     useEffect(()=>{
-        // if(keyToggle  && keyToggle <= blocks.length){
-        //     handleVisiblity(blocks[keyToggle-1].visable,keyToggle-1)
-        // }
-    },[keyToggle,handleVisiblity,blocks])
+        if(playlist){
+            SetPlaylist(playlist)
+        }
+    },[SetPlaylist])
   return (
     <div className={`absolute top-0 left-0  rounded-md  w-[5vw] h-[100vh] flex flex-col justify-between opacity-0 hover:opacity-100`}
 
@@ -78,17 +103,20 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
             blocks.length > 0 ? blocks.map((n,i) =>{
             return(
                 <button 
-                    onClick={()=>handleVisiblity(n.visable,i)}
+                    onClick={()=>handleVisiblity(n.visible,i)}
                     key={i}
                     className="flex flex-row row-reverse justify-center items-center text-slate-900 font-bold border-1 border-slate-600 py-5 hover:bg-slate-900 hover:text-slate-200">
                     <sub className='text-slate-200'>{String.fromCharCode(97 + i)}</sub>     
-                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#bdbdbd"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4.97883 9.68508C2.99294 8.89073 2 8.49355 2 8C2 7.50645 2.99294 7.10927 4.97883 6.31492L7.7873 5.19153C9.77318 4.39718 10.7661 4 12 4C13.2339 4 14.2268 4.39718 16.2127 5.19153L19.0212 6.31492C21.0071 7.10927 22 7.50645 22 8C22 8.49355 21.0071 8.89073 19.0212 9.68508L16.2127 10.8085C14.2268 11.6028 13.2339 12 12 12C10.7661 12 9.77318 11.6028 7.7873 10.8085L4.97883 9.68508Z" stroke="#bdbdbd" stroke-width="1.5"></path> <path opacity="0.5" d="M22 12C22 12 21.0071 12.8907 19.0212 13.6851L16.2127 14.8085C14.2268 15.6028 13.2339 16 12 16C10.7661 16 9.77318 15.6028 7.7873 14.8085L4.97883 13.6851C2.99294 12.8907 2 12 2 12" stroke="#bdbdbd" stroke-width="1.5" stroke-linecap="round"></path> <path opacity="0.5" d="M22 16C22 16 21.0071 16.8907 19.0212 17.6851L16.2127 18.8085C14.2268 19.6028 13.2339 20 12 20C10.7661 20 9.77318 19.6028 7.7873 18.8085L4.97883 17.6851C2.99294 16.8907 2 16 2 16" stroke="#bdbdbd" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#bdbdbd"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4.97883 9.68508C2.99294 8.89073 2 8.49355 2 8C2 7.50645 2.99294 7.10927 4.97883 6.31492L7.7873 5.19153C9.77318 4.39718 10.7661 4 12 4C13.2339 4 14.2268 4.39718 16.2127 5.19153L19.0212 6.31492C21.0071 7.10927 22 7.50645 22 8C22 8.49355 21.0071 8.89073 19.0212 9.68508L16.2127 10.8085C14.2268 11.6028 13.2339 12 12 12C10.7661 12 9.77318 11.6028 7.7873 10.8085L4.97883 9.68508Z" stroke="#bdbdbd" strokeWidth="1.5"></path> <path opacity="0.5" d="M22 12C22 12 21.0071 12.8907 19.0212 13.6851L16.2127 14.8085C14.2268 15.6028 13.2339 16 12 16C10.7661 16 9.77318 15.6028 7.7873 14.8085L4.97883 13.6851C2.99294 12.8907 2 12 2 12" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round"></path> <path opacity="0.5" d="M22 16C22 16 21.0071 16.8907 19.0212 17.6851L16.2127 18.8085C14.2268 19.6028 13.2339 20 12 20C10.7661 20 9.77318 19.6028 7.7873 18.8085L4.97883 17.6851C2.99294 16.8907 2 16 2 16" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round"></path> </g></svg>
                 </button>
             )}):null
         }
                     
         </div>
         <div className='z-10  w-full flex flex-col justify-start'>
+            <button className="flex justify-center items-center mt-5 text-slate-900 font-bold border-1 border-slate-600 py-2  hover:bg-slate-900 hover:text-slate-200 "  onClick={saveBlocks} >
+            <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M14.2084 13.5521C16.3025 13.5521 18 11.8615 18 9.77606C18 7.6906 16.3025 6 14.2084 6C12.1144 6 10.4169 7.6906 10.4169 9.77606C10.4169 10.742 10.8578 11.4446 10.8578 11.4446L6.27264 16.011C6.0669 16.2159 5.77886 16.7486 6.27264 17.2404L6.8017 17.7673C7.00743 17.9429 7.52471 18.1888 7.94796 17.7673L8.56519 17.1526C9.18242 17.7673 9.88782 17.416 10.1523 17.0647C10.5932 16.45 10.0642 15.8353 10.0642 15.8353L10.2405 15.6597C11.087 16.5027 11.8277 16.011 12.0922 15.6597C12.5331 15.045 12.0922 14.4303 12.0922 14.4303C11.9159 14.079 11.5632 14.079 12.004 13.64L12.5331 13.113C12.9564 13.4643 13.8264 13.5521 14.2084 13.5521Z" stroke="#c9c9c9" strokeWidth="1.5" strokeLinejoin="round"></path> <path opacity="0.5" d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="#c9c9c9" strokeWidth="1.5"></path> </g></svg>
+            </button>
              <button  onClick={()=>setAddPlayList(!addPlaylist)}className="flex justify-center items-center mt-5 text-slate-900 font-bold border-1 border-slate-600 py-2  hover:bg-slate-900 hover:text-slate-200 "  >
              <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.5" d="M16 4.00195C18.175 4.01406 19.3529 4.11051 20.1213 4.87889C21 5.75757 21 7.17179 21 10.0002V16.0002C21 18.8286 21 20.2429 20.1213 21.1215C19.2426 22.0002 17.8284 22.0002 15 22.0002H9C6.17157 22.0002 4.75736 22.0002 3.87868 21.1215C3 20.2429 3 18.8286 3 16.0002V10.0002C3 7.17179 3 5.75757 3.87868 4.87889C4.64706 4.11051 5.82497 4.01406 8 4.00195" stroke="#bdbdbd" strokeWidth="1.5"></path> <path d="M8 14H16" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round"></path> <path d="M7 10.5H17" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round"></path> <path d="M9 17.5H15" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round"></path> <path d="M8 3.5C8 2.67157 8.67157 2 9.5 2H14.5C15.3284 2 16 2.67157 16 3.5V4.5C16 5.32843 15.3284 6 14.5 6H9.5C8.67157 6 8 5.32843 8 4.5V3.5Z" stroke="#bdbdbd" strokeWidth="1.5"></path> </g></svg>
             </button>
@@ -103,7 +131,7 @@ export default function MasterDeck({blocks,setBlocks,keyToggle}) {
             }}  
             height={"150px"} 
             width={"150px"} 
-            url={`https://www.youtube.com/watch?v=${youtubeLinks.length>0?youtubeLinks[index].contentDetails.videoId:null}`} />
+            url={`https://www.youtube.com/watch?v=${youtubeLinks&&youtubeLinks.length>0?youtubeLinks[index].contentDetails.videoId:null}`} />
             <button className=" flex justify-center items-center mb-5 text-slate-900 font-bold border-1 border-slate-600 py-2  hover:bg-slate-900 hover:text-slate-200 " onClick={()=>index < youtubeLinks.length ? setIndex(index+1):setIndex(0)}>
             <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M19 9L12 15L5 9" stroke="#bdbdbd" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
             </button>
