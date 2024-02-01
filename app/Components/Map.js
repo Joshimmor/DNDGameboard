@@ -33,6 +33,7 @@ useEffect(()=>{
             }
             savedBlocks.push(blockValue)
         }
+        console.log(savedBlocks)
         setBlocks([...savedBlocks])
     })
     .catch( err => setBlocks([]))

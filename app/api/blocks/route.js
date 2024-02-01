@@ -56,12 +56,15 @@ export async function DELETE (req){
     if(req.method != 'DELETE'){ return NextResponse.json({message:"method not allowed"})}
     const sentBlocks = await req.json()
     let idsToDelete = []
-    for(let i =0 ; i < sentBlocks.length;i++){
-        idsToDelete.push(sentBlocks[i].blockId)
+    for(let i = 0 ; i < sentBlocks.length;i++){
+        idsToDelete.push(Number(sentBlocks[i].blockId))
     }
+    console.log(idsToDelete)
     const transaction = await prisma.block.deleteMany({
-            id: {
-                in: idsToDelete
+            where:{
+                id: {
+                    in: idsToDelete
+                }   
             }
           })
 
