@@ -37,9 +37,36 @@ useEffect(()=>{
         setBlocks([...savedBlocks])
     })
     .catch( err => setBlocks([]))
-},[gameid])
+},[gameid,setBlocks])
 
-
+const fetchBlocks = () =>{
+    fetch("/api/games?id=1")
+    .then(n => n.json())
+    .then(n => setGame({
+        map: n.map, 
+        playlist: n.playlist
+    }))
+    .catch(err => console.log(err))
+    fetch("/api/blocks?gameid=1")
+    .then(n => n.json())
+    .then(n => {
+        let savedBlocks = []
+        for(let i = 0; i < n.length ; i++){
+            let blockValue ={
+                blockId:n[i].id,
+                height:n[i].height,
+                width:n[i].width,
+                x:n[i].x,
+                y:n[i].y,
+                visible:n[i].visible
+            }
+            savedBlocks.push(blockValue)
+        }
+        console.log(savedBlocks)
+        setBlocks([...savedBlocks])
+    })
+    .catch( err => setBlocks([]))
+}
 const handleDelete = () => {
     let invisibleBlocks =  blocks.filter(n=> n.visible == false)
     console.log(invisibleBlocks)
@@ -103,7 +130,7 @@ const SetPosition = (index,x,y) => {
     onKeyDown={handlePress}
     >
 
-        <MasterDeck gameId={gameid} playlist={game.playlist} blocks={blocks} setBlocks={setBlocks} keyToggle={keyToggle}/>
+        <MasterDeck gameId={gameid} playlist={game.playlist} blocks={blocks} setBlocks={setBlocks} keyToggle={keyToggle} fetchBlocks={fetchBlocks}/>
         <div  className='w-screen h-screen z-2 '
      
             style={{
@@ -116,7 +143,7 @@ const SetPosition = (index,x,y) => {
             {
                 blocks.length > 0 ? blocks.map((n,i)=>{
                     return(
-                        <Block key={i} gameId={gameid} blockId={n.blockId} visible={n.visible} width={n.width} height={n.height} posx={n.x} posy={n.y} index={i+1} handleVisibility={handleVisibility} increaseSize={increaseSize} decreaseSize={decreaseSize} SetPosition={SetPosition}/>
+                        <Block key={i}  gameId={gameid} blockId={n.blockId} visible={n.visible} width={n.width} height={n.height} posx={n.x} posy={n.y} index={i+1} handleVisibility={handleVisibility} increaseSize={increaseSize} decreaseSize={decreaseSize} SetPosition={SetPosition}/>
                     )
                 }):null
             }

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import ReactPlayer from 'react-player/youtube'
 import "./MasterDeck.css"
 import PlaylistModal from './PlaylistModal'
-export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId}) {
+export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId,fetchBlocks}) {
     let [youtubeLinks ,setYoutube] = useState([])
     let [index,setIndex] = useState(0)
     let[addPlaylist,setAddPlayList] = useState(false)
@@ -39,7 +39,6 @@ export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId})
             y:y,
             visible:true
         }
-        setBlocks([...blocks,start])
         saveBlock(start)
         e.preventDefault()
     }
@@ -71,6 +70,7 @@ export default function MasterDeck({playlist,blocks,setBlocks,keyToggle,gameId})
             })
         })
         .then(n => console.log("Saved Block"))
+        .then(n => fetchBlocks())
         .catch(err => console.log(err))
     }
     const saveBlocks = () =>{
