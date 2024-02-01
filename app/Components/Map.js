@@ -41,6 +41,7 @@ useEffect(()=>{
 
 const handleDelete = () => {
     let invisibleBlocks =  blocks.filter(n=> n.visible == false)
+    console.log(invisibleBlocks)
     fetch("/api/blocks",{
         method:"DELETE",
         body:JSON.stringify(invisibleBlocks)

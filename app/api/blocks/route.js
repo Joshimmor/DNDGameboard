@@ -55,12 +55,16 @@ export async function POST (req){
 export async function DELETE (req){
     if(req.method != 'DELETE'){ return NextResponse.json({message:"method not allowed"})}
     const sentBlocks = await req.json()
-    const transaction = await prisma.$transaction(
-        sentBlocks.map((n) =>
-          prisma.block.delete({
-            where: { id: n.blockId }
+    let idsToDelete = []
+    for(let i =0 ; i < sentBlocks.length;i++){
+        idsToDelete.push(sentBlocks[i].blockId)
+    }
+    const transaction = await prisma.block.deleteMany({
+            id: {
+                in: idsToDelete
+            }
           })
-        )
-      );
+
+
       return NextResponse.json(transaction);
 }
