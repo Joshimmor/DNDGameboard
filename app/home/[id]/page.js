@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import Link from 'next/link'
 
-export default function page({params}) {
+export default function Page({params}) {
   let [games,setGames] = useState([])
   let [selected,setSelected] = useState(null)
   let [open,setSideBar] = useState(false)
