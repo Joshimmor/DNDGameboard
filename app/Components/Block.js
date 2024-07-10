@@ -71,7 +71,8 @@ export default function  Block ({posx,posy,visible,index,width,height,gameId,blo
             width:`${width}vw`,
             height:`${height}vw`,
             x:`${posx}px`,
-            y:`${posy}px`
+            y:`${posy}px`,
+            zIndex:9
         }}   
         >
 

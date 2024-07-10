@@ -18,6 +18,7 @@ export async function GET(req,res){
 export async function PUT (req){
     if(req.method != 'PUT'){ return NextResponse.json({message:"method not allowed"})}
     const sentBlocks = await req.json()
+    console.log(sentBlocks)
     const transaction = await prisma.$transaction(
         sentBlocks.map((n) =>
           prisma.block.update({

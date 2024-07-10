@@ -2,8 +2,10 @@
 import MasterDeck from '@/app/Components/MasterDeck'
 import Block from '@/app/Components/Block'
 import React, { useEffect, useState} from 'react'
-
+import ReactPlayer from 'react-player/youtube'
 import "../map/[id]/Map.css"
+import "./map.css"
+import { PUT } from '../api/blocks/route'
 
 
 export default function Map({gameid}) {
@@ -11,14 +13,14 @@ let [game,setGame] = useState({})
 let [blocks,setBlocks]=useState([])
 let [keyToggle,setKeyToggle] = useState()
 useEffect(()=>{
-    fetch("/api/games?id=1")
+    fetch("/api/games?id="+gameid)
     .then(n => n.json())
     .then(n => setGame({
         map: n.map, 
         playlist: n.playlist
     }))
     .catch(err => console.log(err))
-    fetch("/api/blocks?gameid=1")
+    fetch("/api/blocks?gameid="+gameid)
     .then(n => n.json())
     .then(n => {
         let savedBlocks = []
@@ -38,16 +40,17 @@ useEffect(()=>{
     })
     .catch( err => setBlocks([]))
 },[gameid,setBlocks])
-
-const fetchBlocks = () =>{
-    fetch("/api/games?id=1")
+const SetMap = () =>{
+    fetch("/api/games?id="+gameid)
     .then(n => n.json())
     .then(n => setGame({
         map: n.map, 
         playlist: n.playlist
     }))
     .catch(err => console.log(err))
-    fetch("/api/blocks?gameid=1")
+}
+const fetchBlocks = () =>{
+    fetch("/api/blocks?gameid="+gameid)
     .then(n => n.json())
     .then(n => {
         let savedBlocks = []
@@ -75,9 +78,11 @@ const handleDelete = () => {
         body:JSON.stringify(invisibleBlocks)
     })
     .then(n => n.json())
+    .then(n => console.log(n))
     .then(n => console.log("DELETED"))
+    .then(n => window.location.reload())
     .catch(err => console.log(err))
-    setBlocks([...blocks.filter(n => n.visible == true)])
+    // setBlocks([...blocks.filter(n => n.visible == true)])
 }
 const handlePress = (e) =>{
     if(Number(e.keyCode)  == 46){
@@ -122,6 +127,7 @@ const SetPosition = (index,x,y) => {
     block.y = y
     let tempBlocks = [...blocks]
     tempBlocks[index] = block
+    fetch("/api/blocks", {method:"PUT",body:JSON.stringify([block])})
     setBlocks(tempBlocks)
 }
   return (
@@ -129,25 +135,29 @@ const SetPosition = (index,x,y) => {
     tabIndex="0"
     onKeyDown={handlePress}
     >
-
+        <div className="video-container">
+            <ReactPlayer 
+            className="video"    
+            playing={true}
+            loop={true}
+            controls={false}
+            height={"100%"} 
+            width={"100%"} 
+            muted={true}
+            url={`https://www.youtube.com/watch?v=nPQ4BpTfK1Q`} />
+        </div>
         <MasterDeck gameId={gameid} playlist={game.playlist} blocks={blocks} setBlocks={setBlocks} keyToggle={keyToggle} fetchBlocks={fetchBlocks}/>
-        <div  className='w-screen h-screen z-2 '
-     
-            style={{
-                backgroundImage:`url(${game.map})`,
-                backgroundSize:"contain",
-                backgroundPosition:"center",
-                backgroundRepeat:"no-repeat",
-            }}
-        >
+        <div  className='w-screen h-screen overlay'>
+            <img src={`${game.map}`} className="overlay-image"/>
+        </div>
             {
                 blocks.length > 0 ? blocks.map((n,i)=>{
                     return(
-                        <Block key={i}  gameId={gameid} blockId={n.blockId} visible={n.visible} width={n.width} height={n.height} posx={n.x} posy={n.y} index={i+1} handleVisibility={handleVisibility} increaseSize={increaseSize} decreaseSize={decreaseSize} SetPosition={SetPosition}/>
+                        <Block className="block" key={i}  gameId={gameid} blockId={n.blockId} visible={n.visible} width={n.width} height={n.height} posx={n.x} posy={n.y} index={i+1} handleVisibility={handleVisibility} increaseSize={increaseSize} decreaseSize={decreaseSize} SetPosition={SetPosition}/>
                     )
                 }):null
             }
-        </div>
+        {/* </div> */}
     </section>
   )
 }
